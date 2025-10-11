@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aptus - The Future of Style</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background: radial-gradient(circle at top left, rgba(88,28,135,0.4), transparent 60%),
+                  radial-gradient(circle at bottom right, rgba(253,224,71,0.4), transparent 60%),
+                  #050505;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      font-family: 'Poppins', sans-serif;
+      color: #fff;
+    }
+    .glass {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(18px);
+      border-radius: 1rem;
+    }
+    .fade {
+      animation: fadeIn 0.5s ease-in-out;
+    }
+    @keyframes fadeIn {
+      from {opacity: 0; transform: scale(0.97);}
+      to {opacity: 1; transform: scale(1);}
+    }
+    button {
+      transition: all 0.3s;
+    }
+    button:hover {
+      color: gold;
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+<body class="flex items-center justify-center min-h-screen">
+  <div id="app" class="w-full max-w-md p-6 text-center space-y-6 fade">
+    
+    <!-- Screen 1: Login -->
+    <div id="screen-login" class="space-y-6">
+      <img src="ChatGPT Image Oct 6, 2025, 02_21_53 PM.png" alt="Aptus Logo" class="mx-auto w-28 h-28" />
+      <h1 class="text-4xl font-bold text-white">Aptus</h1>
+      <p class="text-gray-300">The Future of Style is Personal</p>
+      <button id="btn-login" class="glass w-full py-3 rounded-xl font-semibold">Sign in with Google</button>
+      <p class="text-sm text-gray-400 mt-10">Founder: <span class="font-semibold text-white">SK.ALFAZ</span> | Email: shaikalfaz05@gmail.com</p>
+    </div>
+
+    <!-- Screen 2: Gender -->
+    <div id="screen-gender" class="hidden space-y-6">
+      <h2 class="text-2xl font-semibold">Welcome, Guest!</h2>
+      <p>I'm styling for...</p>
+      <div class="grid grid-cols-2 gap-4">
+        <button class="glass py-3 rounded-xl" data-gender="Boy">👦 Boy</button>
+        <button class="glass py-3 rounded-xl" data-gender="Girl">👧 Girl</button>
+      </div>
+      <button class="glass w-full py-2" id="back-gender">← Back</button>
+      <p class="text-sm text-gray-400">Founder: <span class="font-semibold text-white">SK.ALFAZ</span></p>
+    </div>
+
+    <!-- Screen 3: Profile -->
+    <div id="screen-profile" class="hidden space-y-6">
+      <h2 class="text-2xl font-semibold">Create Your Profile</h2>
+      <input id="height" type="number" placeholder="Height (cm)" class="glass w-full p-2 rounded-md" />
+      <input id="weight" type="number" placeholder="Weight (kg)" class="glass w-full p-2 rounded-md" />
+      <button id="scan" class="glass w-full py-3">Upload Selfie & Scan</button>
+      <p id="scan-result" class="text-gray-300"></p>
+      <button id="continue-profile" disabled class="glass w-full py-3 opacity-50 cursor-not-allowed">Continue</button>
+      <button class="glass w-full py-2" id="back-profile">← Back</button>
+      <p class="text-sm text-gray-400">Founder: <span class="font-semibold text-white">SK.ALFAZ</span></p>
+    </div>
+
+    <!-- Screen 4: Occasion -->
+    <div id="screen-occasion" class="hidden space-y-6">
+      <h2 class="text-2xl font-semibold">For Which Occasion?</h2>
+      <div class="grid grid-cols-2 gap-4">
+        <button class="glass py-3 rounded-xl" data-occasion="Date">📅 Date</button>
+        <button class="glass py-3 rounded-xl" data-occasion="Marriage">💍 Marriage</button>
+        <button class="glass py-3 rounded-xl" data-occasion="Party">🎉 Party</button>
+        <button class="glass py-3 rounded-xl" data-occasion="Office">👔 Office</button>
+        <button class="glass py-3 rounded-xl col-span-2" data-occasion="College">🏫 College</button>
+      </div>
+      <button class="glass w-full py-2" id="back-occasion">← Back</button>
+      <p class="text-sm text-gray-400">Founder: <span class="font-semibold text-white">SK.ALFAZ</span></p>
+    </div>
+
+    <!-- Screen 5: Outfit -->
+    <div id="screen-outfit" class="hidden space-y-6">
+      <h2 id="outfit-title" class="text-2xl font-semibold"></h2>
+      <div id="outfit-container" class="space-y-4"></div>
+      <button class="glass w-full py-2" id="back-outfit">← Back to Occasions</button>
+      <button class="glass w-full py-2" id="goto-feedback">Leave Feedback</button>
+      <p class="text-sm text-gray-400">Founder: <span class="font-semibold text-white">SK.ALFAZ</span></p>
+    </div>
+
+    <!-- Screen 6: Feedback -->
+    <div id="screen-feedback" class="hidden space-y-6">
+      <h2 class="text-2xl font-semibold">Your Experience</h2>
+      <textarea id="feedback-text" placeholder="Share your thoughts..." class="glass w-full p-3 rounded-md h-32"></textarea>
+      <button id="submit-feedback" class="glass w-full py-3">Submit</button>
+      <p id="feedback-msg" class="text-green-400"></p>
+      <button class="glass w-full py-2" id="back-feedback">← Back</button>
+      <p class="text-sm text-gray-400">Founder: <span class="font-semibold text-white">SK.ALFAZ</span></p>
+    </div>
+
+  </div>
+
+  <script>
+    const screens = {
+      login: document.getElementById("screen-login"),
+      gender: document.getElementById("screen-gender"),
+      profile: document.getElementById("screen-profile"),
+      occasion: document.getElementById("screen-occasion"),
+      outfit: document.getElementById("screen-outfit"),
+      feedback: document.getElementById("screen-feedback"),
+    };
+    let user = { name: "Guest", gender: null, skinTone: null };
+
+    function show(screen) {
+      Object.values(screens).forEach(s => s.classList.add("hidden"));
+      screens[screen].classList.remove("hidden");
+      screens[screen].classList.add("fade");
+    }
+
+    document.getElementById("btn-login").onclick = () => show("gender");
+    document.querySelectorAll("#screen-gender button[data-gender]").forEach(btn=>{
+      btn.onclick = () => { user.gender = btn.dataset.gender; show("profile"); };
+    });
+    document.getElementById("scan").onclick = () => {
+      const tones = ["Warm", "Cool", "Neutral"];
+      const result = tones[Math.floor(Math.random() * tones.length)];
+      const scanMsg = document.getElementById("scan-result");
+      scanMsg.textContent = "Analyzing...";
+      setTimeout(() => {
+        user.skinTone = result;
+        scanMsg.textContent = "Detected: " + result;
+        document.getElementById("continue-profile").disabled = false;
+        document.getElementById("continue-profile").classList.remove("opacity-50","cursor-not-allowed");
+      }, 1500);
+    };
+    document.getElementById("continue-profile").onclick = () => show("occasion");
+
+    document.querySelectorAll("#screen-occasion button[data-occasion]").forEach(btn=>{
+      btn.onclick = async () => {
+        const occasion = btn.dataset.occasion;
+        show("outfit");
+        document.getElementById("outfit-title").textContent = `Your ${user.gender} Outfits for ${occasion}`;
+        const container = document.getElementById("outfit-container");
+        container.innerHTML = "🧠 Aptus AI is thinking...";
+        try {
+          const res = await fetch("https://aptus-ai-server.onrender.com/get-outfit",  {
+            method: "POST",
+            headers: {"Content-Type":"application/json"},
+            body: JSON.stringify({ gender: user.gender, skinTone: user.skinTone, occasion })
+          });
+          const data = await res.json();
+          container.innerHTML = "";
+          data.outfits.forEach(o=>{
+            const card = document.createElement("div");
+            card.className="glass p-3 rounded-xl space-y-2";
+            card.innerHTML = `<img src="${o.image}" class="rounded-md mx-auto w-40 h-40 object-cover">
+                              <p class="font-semibold">${o.name}</p>
+                              <a href="#" class="text-gold hover:underline">Shop Now</a>`;
+            container.appendChild(card);
+          });
+        } catch {
+          container.innerHTML = "Network error — please run backend server.";
+        }
+      };
+    });
+
+    document.getElementById("goto-feedback").onclick = ()=>show("feedback");
+    document.getElementById("submit-feedback").onclick = ()=>{
+      const text=document.getElementById("feedback-text").value.trim();
+      if(!text){alert("Please write something!");return;}
+      document.getElementById("feedback-msg").textContent="Thank you for your feedback!";
+    };
+
+    // Back buttons
+    document.getElementById("back-gender").onclick = ()=>show("login");
+    document.getElementById("back-profile").onclick = ()=>show("gender");
+    document.getElementById("back-occasion").onclick = ()=>show("profile");
+    document.getElementById("back-outfit").onclick = ()=>show("occasion");
+    document.getElementById("back-feedback").onclick = ()=>show("outfit");
+  </script>
+</body>
+</html>
