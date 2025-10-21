@@ -1,190 +1,628 @@
-<!DOCTYPE html>
+<!-- Save this file as aptus.html -->
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Aptus - The Future of Style</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Aptus — Personal AI Stylist (Demo)</title>
+
+  <!-- Tailwind CSS (CDN) -->
   <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
   <style>
-    body {
-      background: radial-gradient(circle at top left, rgba(88,28,135,0.4), transparent 60%),
-                  radial-gradient(circle at bottom right, rgba(253,224,71,0.4), transparent 60%),
-                  #050505;
-      background-repeat: no-repeat;
-      background-attachment: fixed;
-      font-family: 'Poppins', sans-serif;
-      color: #fff;
+    :root{
+      --bg:#050505;
+      --gold:#d4af37;
+      --gold-dark:#b8860b;
+      --accent1:#6b21a8;
+      --accent2:#2563eb;
+      --glass-bg: rgba(255,255,255,0.03);
+      --muted: rgba(230,235,255,0.78);
     }
-    .glass {
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      backdrop-filter: blur(18px);
-      border-radius: 1rem;
+    html,body{height:100%;margin:0;background:var(--bg);font-family:Poppins,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;color:#eef2ff;-webkit-font-smoothing:antialiased;}
+
+    /* Aurora background (soft shimmer) */
+    body::before{
+      content:"";
+      position:fixed; inset:0; z-index:-3;
+      background:
+        radial-gradient(700px 520px at 8% 18%, rgba(107,33,168,0.14), transparent 18%),
+        radial-gradient(650px 480px at 85% 82%, rgba(37,99,235,0.10), transparent 20%),
+        linear-gradient(180deg, rgba(5,5,7,1), rgba(5,5,7,1));
+      pointer-events:none;
+      filter: blur(22px);
     }
-    .fade {
-      animation: fadeIn 0.5s ease-in-out;
+    .aurora-shimmer{
+      position:fixed; inset:0; z-index:-2; pointer-events:none; opacity:0.12;
+      background:
+        radial-gradient(900px 600px at 15% 25%, rgba(124,58,237,0.08), transparent 18%),
+        radial-gradient(800px 500px at 85% 75%, rgba(59,130,246,0.06), transparent 20%);
+      transform: translate3d(0,0,0);
+      animation: shimmer 18s linear infinite;
+      mix-blend-mode: screen;
     }
-    @keyframes fadeIn {
-      from {opacity: 0; transform: scale(0.97);}
-      to {opacity: 1; transform: scale(1);}
+    @keyframes shimmer {
+      0% { transform: translate(-6%, -2%) scale(1.02); }
+      50% { transform: translate(6%, 2%) scale(1.01); }
+      100% { transform: translate(-6%, -2%) scale(1.02); }
     }
-    button {
-      transition: all 0.3s;
-    }
-    button:hover {
-      color: gold;
-      transform: scale(1.05);
+
+    .app { min-height:100vh; display:flex; align-items:center; justify-content:center; padding:28px; }
+    .card { width:980px; max-width:calc(100% - 40px); border-radius:18px; padding:26px; background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border:1px solid rgba(255,255,255,0.04); box-shadow: 0 18px 60px rgba(2,6,23,0.7); backdrop-filter: blur(20px); position:relative; }
+
+     .brand {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+    .brand-left { display:flex; gap:14px; align-items:center; }
+    .logo-embed { width:64px; height:64px; border-radius:12px; display:flex; align-items:center; justify-content:center; background: linear-gradient(135deg,var(--gold),var(--gold-dark)); box-shadow:0 10px 30px rgba(212,175,55,0.08); padding:8px; }
+    .brand-title { font-family:'Playfair Display',serif; font-size:20px; font-weight:700; color:white; }
+    .brand-tag { color:var(--muted); font-size:13px; }
+
+    .screen { display:none; opacity:0; transform: translateY(8px) scale(.98); transition: all 320ms cubic-bezier(.2,.9,.28,1); }
+    .screen.active { display:block; opacity:1; transform: translateY(0) scale(1); }
+
+    .glass { background: var(--glass-bg); border-radius:12px; border:1px solid rgba(255,255,255,0.04); padding:12px; }
+
+    .btn { border-radius:12px; padding:10px 14px; border:1px solid rgba(255,255,255,0.04); background: rgba(255,255,255,0.02); color:#eaf0ff; cursor:pointer; font-family:Poppins, sans-serif; }
+    .btn-gold { background: linear-gradient(90deg,var(--gold),var(--gold-dark)); color:#071019; border:none; font-weight:700; box-shadow: 0 10px 30px rgba(212,175,55,0.08); }
+    .btn-accent { background: linear-gradient(90deg, rgba(107,33,168,0.10), rgba(37,99,235,0.10)); border:1px solid rgba(124,58,237,0.12); }
+    .btn:hover{ transform: translateY(-3px); transition: transform .18s ease; }
+
+    .oc-grid { display:grid; grid-template-columns: repeat(2,1fr); gap:14px; }
+    .oc-btn{ padding:18px; border-radius:12px; min-height:98px; display:flex; align-items:center; justify-content:center; text-align:center; font-weight:700; letter-spacing:.2px; font-size:16px; }
+
+    .warn-title { color:var(--gold); font-weight:700; font-size:15px; margin-top:10px; }
+    .warn-text { color:var(--gold); font-weight:700; font-size:14px; margin-top:6px; }
+
+    .carousel { display:flex; gap:14px; overflow-x:auto; padding-bottom:6px; -webkit-overflow-scrolling:touch; }
+    .look { min-width:320px; flex:0 0 320px; border-radius:12px; padding:12px; background: linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0.01)); border:1px solid rgba(255,255,255,0.03); }
+    .item-img { width:100%; height:170px; border-radius:8px; object-fit:cover; background:#111; }
+
+    .modal-backdrop { position:fixed; inset:0; background:rgba(2,6,23,0.6); display:flex; align-items:center; justify-content:center; z-index:80; }
+    .modal { background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); padding:18px; border-radius:12px; width:92%; max-width:660px; border:1px solid rgba(255,255,255,0.04); }
+
+    .founder-footer { text-align:center; font-family:Poppins, sans-serif; color: var(--gold); font-size:13px; margin-top:12px; }
+
+    @media (max-width:920px) {
+      .card { padding:18px; width:calc(100% - 36px); }
+      .look { min-width:260px; flex:0 0 260px; }
+      .oc-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
-<body class="flex items-center justify-center min-h-screen">
-  <div id="app" class="w-full max-w-md p-6 text-center space-y-6 fade">
-    
-    <!-- Screen 1: Login -->
-    <div id="screen-login" class="space-y-6">
-      <img src="ChatGPT Image Oct 6, 2025, 02_21_53 PM.png" alt="Aptus Logo" class="mx-auto w-28 h-28" />
-      <h1 class="text-4xl font-bold text-white">Aptus</h1>
-      <p class="text-gray-300">The Future of Style is Personal</p>
-      <button id="btn-login" class="glass w-full py-3 rounded-xl font-semibold">Sign in with Google</button>
-      <p class="text-sm text-gray-400 mt-10">Founder: <span class="font-semibold text-white">SK.ALFAZ</span> | Email: shaikalfaz05@gmail.com</p>
-    </div>
+<body>
+  <div class="aurora-shimmer" aria-hidden="true"></div>
 
-    <!-- Screen 2: Gender -->
-    <div id="screen-gender" class="hidden space-y-6">
-      <h2 class="text-2xl font-semibold">Welcome, Guest!</h2>
-      <p>I'm styling for...</p>
-      <div class="grid grid-cols-2 gap-4">
-        <button class="glass py-3 rounded-xl" data-gender="Boy">👦 Boy</button>
-        <button class="glass py-3 rounded-xl" data-gender="Girl">👧 Girl</button>
+  <div class="app">
+    <div class="card">
+      <div class="brand">
+        <div class="brand-left">
+          <div class="logo-embed" id="logoTopLeft" style="display:none;" title="Aptus">
+            <!-- small decorative mark — will be replaced visually by the embedded PNG on Home via JS -->
+            <svg width="44" height="44" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+              <defs><linearGradient id="gL" x1="0" x2="1"><stop offset="0" stop-color="#E6B980"/><stop offset="1" stop-color="#EACDA3"/></linearGradient></defs>
+              <rect width="64" height="64" rx="12" fill="url(#gL)"></rect>
+              <path d="M18 46 L26 18 L34 46 Z" fill="#071019"></path>
+              <path d="M30 26 L38 26 L32 42 Z" fill="url(#gL)"></path>
+            </svg>
+          </div>
+
+          <div>
+            <div class="brand-title">Aptus</div>
+            <div class="brand-tag">The Future of Style is Personal</div>
+          </div>
+        </div>
+
+        <div id="profileQuickBtn" style="display:none;">
+          <button id="openEdit" class="btn btn-accent">Profile</button>
+        </div>
       </div>
-      <button class="glass w-full py-2" id="back-gender">← Back</button>
-      <p class="text-sm text-gray-400">Founder: <span class="font-semibold text-white">SK.ALFAZ</span></p>
-    </div>
 
-    <!-- Screen 3: Profile -->
-    <div id="screen-profile" class="hidden space-y-6">
-      <h2 class="text-2xl font-semibold">Create Your Profile</h2>
-      <input id="height" type="number" placeholder="Height (cm)" class="glass w-full p-2 rounded-md" />
-      <input id="weight" type="number" placeholder="Weight (kg)" class="glass w-full p-2 rounded-md" />
-      <button id="scan" class="glass w-full py-3">Upload Selfie & Scan</button>
-      <p id="scan-result" class="text-gray-300"></p>
-      <button id="continue-profile" disabled class="glass w-full py-3 opacity-50 cursor-not-allowed">Continue</button>
-      <button class="glass w-full py-2" id="back-profile">← Back</button>
-      <p class="text-sm text-gray-400">Founder: <span class="font-semibold text-white">SK.ALFAZ</span></p>
-    </div>
+      <div id="screens" style="margin-top:18px;">
 
-    <!-- Screen 4: Occasion -->
-    <div id="screen-occasion" class="hidden space-y-6">
-      <h2 class="text-2xl font-semibold">For Which Occasion?</h2>
-      <div class="grid grid-cols-2 gap-4">
-        <button class="glass py-3 rounded-xl" data-occasion="Date">📅 Date</button>
-        <button class="glass py-3 rounded-xl" data-occasion="Marriage">💍 Marriage</button>
-        <button class="glass py-3 rounded-xl" data-occasion="Party">🎉 Party</button>
-        <button class="glass py-3 rounded-xl" data-occasion="Office">👔 Office</button>
-        <button class="glass py-3 rounded-xl col-span-2" data-occasion="College">🏫 College</button>
+        <!-- Login -->
+        <section id="screen-login" class="screen active" aria-hidden="false">
+          <div style="text-align:center; padding:26px 12px;">
+            <div style="display:flex;align-items:center;justify-content:center;margin-bottom:14px;">
+              <!-- LOGIN LOGO (embedded PNG data URI) -->
+              <img id="loginLogo" src="DATA_URI_FOR_YOUR_LOGO_HERE" alt="Aptus logo" style="width:140px;height:140px;border-radius:18px;object-fit:cover;box-shadow:0 12px 40px rgba(212,175,55,0.08);" />
+            </div>
+
+            <h1 style="font-family:'Playfair Display'; font-size:36px; margin-bottom:6px; color:white;">Aptus</h1>
+            <p class="brand-tag" style="margin-bottom:18px;">The Future of Style is Personal</p>
+
+            <div style="max-width:420px;margin:0 auto;">
+              <button id="btnSignIn" class="btn btn-gold w-full py-3" style="font-size:16px;">Sign in with Google</button>
+              <p class="muted" style="margin-top:10px;font-size:13px;">Simulated sign-in for demo purposes</p>
+            </div>
+          </div>
+
+          <div style="margin-top:14px;">
+            <div class="founder-footer">Founder: <strong>SK.ALFAZ</strong> &nbsp;|&nbsp; Email: <a href="mailto:shaikalfaz05@gmail.com" style="color:var(--gold) ">shaikalfaz05@gmail.com</a></div>
+          </div>
+        </section>
+
+        <!-- Gender -->
+        <section id="screen-gender" class="screen" aria-hidden="true">
+          <button id="backFromGender" class="btn glass mb-4">← Back</button>
+          <div style="text-align:center; padding-top:8px;">
+            <h2 style="font-family:'Playfair Display'; font-size:26px;">Welcome, <span id="userName">Guest</span>!</h2>
+            <p class="muted" style="margin-bottom:18px;">I'm styling for...</p>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; max-width:640px; margin:0 auto;">
+              <button class="btn btn-accent oc-btn" data-gender="Men">Men</button>
+              <button class="btn btn-accent oc-btn" data-gender="Women">Women</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- Profile Creation -->
+        <section id="screen-profile" class="screen" aria-hidden="true">
+          <button id="backFromProfile" class="btn glass mb-4">← Back</button>
+          <div style="max-width:720px; margin:8px auto 0;">
+            <h2 style="font-family:'Playfair Display'; font-size:22px;">Create your profile</h2>
+            <p class="muted">Height, weight and quick skin-tone scan</p>
+
+            <div style="margin-top:12px; display:grid; gap:10px;">
+              <div>
+                <label class="muted" style="font-size:13px">Height (cm)</label>
+                <input id="heightInput" type="number" placeholder="e.g. 175" class="glass w-full mt-2 p-3 rounded" />
+              </div>
+
+              <div>
+                <label class="muted" style="font-size:13px">Weight (kg)</label>
+                <input id="weightInput" type="number" placeholder="e.g. 68" class="glass w-full mt-2 p-3 rounded" />
+              </div>
+
+              <div>
+                <label class="muted" style="font-size:13px">Skin Tone Scan</label>
+                <div style="display:flex; gap:10px; align-items:center; margin-top:8px;">
+                  <button id="btnScan" class="btn btn-accent">Upload Selfie & Scan</button>
+                  <div id="scanStatus" class="muted">No result</div>
+                </div>
+                <div class="warn-title">⚠️ Important: Follow these steps for accurate results</div>
+                <div class="warn-text">For best results: no specs, no makeup, natural daylight.</div>
+              </div>
+
+              <div>
+                <button id="btnContinue" class="btn btn-gold w-full opacity-60 cursor-not-allowed" disabled>Continue</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Occasion -->
+        <section id="screen-occasion" class="screen" aria-hidden="true">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div>
+              <h2 style="font-family:'Playfair Display'; font-size:22px;">For Which Occasion?</h2>
+              <p class="muted">Pick an occasion and we'll craft outfit ideas</p>
+            </div>
+            <div>
+              <button id="profileIcon" class="btn glass">👤</button>
+            </div>
+          </div>
+
+          <div style="margin-top:18px; display:grid; grid-template-columns:repeat(2,1fr); gap:12px;">
+            <button class="btn oc-btn" data-oc="Date">Date</button>
+            <button class="btn oc-btn" data-oc="Marriage">Marriage</button>
+            <button class="btn oc-btn" data-oc="Party">Party</button>
+            <button class="btn oc-btn" data-oc="Office">Office</button>
+            <button class="btn oc-btn col-span-2" data-oc="College">College</button>
+          </div>
+
+          <div style="margin-top:14px;">
+            <div class="founder-footer">Founder: <strong>SK.ALFAZ</strong> &nbsp;|&nbsp; Email: <a href="mailto:shaikalfaz05@gmail.com" style="color:var(--gold) ">shaikalfaz05@gmail.com</a></div>
+          </div>
+        </section>
+
+        <!-- Outfits -->
+        <section id="screen-outfit" class="screen" aria-hidden="true">
+          <button id="backFromOutfits" class="btn glass mb-3">← Back</button>
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div>
+              <h2 id="outfitTitle" style="font-family:'Playfair Display'; font-size:22px;"></h2>
+              <p id="outfitSub" class="muted mt-1">Your curated looks</p>
+            </div>
+            <div>
+              <button id="aiTipsBtn" class="btn btn-accent">✨ Get AI Styling Tips</button>
+            </div>
+          </div>
+
+          <div id="loadingArea" class="muted mt-4">🧠 Aptus AI is thinking...</div>
+
+          <div id="carouselWrap" class="mt-6" style="display:none;">
+            <div class="carousel" id="carousel"></div>
+
+            <div style="display:flex; gap:10px; margin-top:14px; align-items:center;">
+              <button id="prevOutfit" class="btn glass">← Prev</button>
+              <button id="nextOutfit" class="btn glass">Next →</button>
+              <div style="flex:1"></div>
+              <button id="shopAllBtn" class="btn btn-gold">Shop Now</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- Edit -->
+        <section id="screen-edit" class="screen" aria-hidden="true">
+          <button id="backFromEdit" class="btn glass mb-4">← Back</button>
+          <div style="max-width:640px; margin:8px auto;">
+            <h2 style="font-family:'Playfair Display';font-size:22px;">Edit Profile</h2>
+            <div class="muted" style="margin-top:6px;">Modify Height, Weight, or re-scan your skin tone</div>
+
+            <div style="margin-top:12px; display:grid; gap:8px;">
+              <label class="muted" style="font-size:13px">Height (cm)</label>
+              <input id="editHeight" type="number" class="glass p-3 rounded" />
+              <label class="muted" style="font-size:13px">Weight (kg)</label>
+              <input id="editWeight" type="number" class="glass p-3 rounded" />
+
+              <div style="display:flex; gap:8px;">
+                <button id="genderMenEdit" class="btn btn-accent">Men</button>
+                <button id="genderWomenEdit" class="btn btn-accent">Women</button>
+              </div>
+
+              <div style="display:flex; gap:8px; align-items:center;">
+                <div id="currentToneDisplay" class="muted">Detected Tone: -</div>
+                <button id="btnRescan" class="btn btn-accent">Re-Scan</button>
+                <div id="rescanInfo" class="muted ml-auto">Last: Never</div>
+              </div>
+
+              <div style="display:flex; gap:8px; margin-top:8px;">
+                <button id="saveEditBtn" class="btn btn-gold ml-auto">Save & Refresh</button>
+                <button id="feedFromEdit" class="btn glass">Feedback & Support</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Feedback -->
+        <section id="screen-feedback" class="screen" aria-hidden="true">
+          <button id="backFromFeedback" class="btn glass mb-4">← Back</button>
+          <div style="max-width:640px;margin:12px auto;">
+            <h2 style="font-family:'Playfair Display';font-size:22px;">Send Feedback</h2>
+            <div class="muted" style="margin-top:6px;">Have an idea or a problem? Please contact us directly at: <a href="mailto:shaikalfaz05@gmail.com" style="color:var(--gold) ">shaikalfaz05@gmail.com</a></div>
+
+            <div style="margin-top:12px;">
+              <label class="muted" style="font-size:13px">Your message</label>
+              <textarea id="feedbackText" class="glass w-full mt-2 p-3 rounded" rows="5" placeholder="Write your feedback..."></textarea>
+              <button id="submitFeedbackBtn" class="btn btn-gold w-full mt-3">Submit Feedback</button>
+              <div id="feedbackThanks" class="muted mt-3" style="display:none;">Thank you — your feedback has been recorded!</div>
+            </div>
+          </div>
+        </section>
+
       </div>
-      <button class="glass w-full py-2" id="back-occasion">← Back</button>
-      <p class="text-sm text-gray-400">Founder: <span class="font-semibold text-white">SK.ALFAZ</span></p>
     </div>
-
-    <!-- Screen 5: Outfit -->
-    <div id="screen-outfit" class="hidden space-y-6">
-      <h2 id="outfit-title" class="text-2xl font-semibold"></h2>
-      <div id="outfit-container" class="space-y-4"></div>
-      <button class="glass w-full py-2" id="back-outfit">← Back to Occasions</button>
-      <button class="glass w-full py-2" id="goto-feedback">Leave Feedback</button>
-      <p class="text-sm text-gray-400">Founder: <span class="font-semibold text-white">SK.ALFAZ</span></p>
-    </div>
-
-    <!-- Screen 6: Feedback -->
-    <div id="screen-feedback" class="hidden space-y-6">
-      <h2 class="text-2xl font-semibold">Your Experience</h2>
-      <textarea id="feedback-text" placeholder="Share your thoughts..." class="glass w-full p-3 rounded-md h-32"></textarea>
-      <button id="submit-feedback" class="glass w-full py-3">Submit</button>
-      <p id="feedback-msg" class="text-green-400"></p>
-      <button class="glass w-full py-2" id="back-feedback">← Back</button>
-      <p class="text-sm text-gray-400">Founder: <span class="font-semibold text-white">SK.ALFAZ</span></p>
-    </div>
-
   </div>
 
-  <script>
-    const screens = {
-      login: document.getElementById("screen-login"),
-      gender: document.getElementById("screen-gender"),
-      profile: document.getElementById("screen-profile"),
-      occasion: document.getElementById("screen-occasion"),
-      outfit: document.getElementById("screen-outfit"),
-      feedback: document.getElementById("screen-feedback"),
-    };
-    let user = { name: "Guest", gender: null, skinTone: null };
+  <!-- modal root -->
+  <div id="modalRoot" style="display:none;"></div>
 
-    function show(screen) {
-      Object.values(screens).forEach(s => s.classList.add("hidden"));
-      screens[screen].classList.remove("hidden");
-      screens[screen].classList.add("fade");
+<script>
+/* ===========================
+   Aptus — Front-end Prototype
+   Simulation only (Phase 1)
+   =========================== */
+
+const firebaseConfig = {
+  // Paste your Firebase config here in Phase 2
+  // apiKey: "...",
+  // authDomain: "...",
+  // projectId: "...",
+  // ...
+};
+
+const state = {
+  profile: { name: 'Guest', gender: null, height: null, weight: null, skinTone: null },
+  currentOccasion: null,
+  outfits: [],
+  outfitIndex: 0
+};
+
+const SCREENS = {
+  login: document.getElementById('screen-login'),
+  gender: document.getElementById('screen-gender'),
+  profile: document.getElementById('screen-profile'),
+  occasion: document.getElementById('screen-occasion'),
+  outfits: document.getElementById('screen-outfit'),
+  edit: document.getElementById('screen-edit'),
+  feedback: document.getElementById('screen-feedback')
+};
+
+function showScreen(key){
+  Object.values(SCREENS).forEach(s => { s.classList.remove('active'); s.setAttribute('aria-hidden','true'); });
+  if(SCREENS[key]){ SCREENS[key].classList.add('active'); SCREENS[key].setAttribute('aria-hidden','false'); }
+  // header small logo + profile quick visible on specific screens
+  const logoTop = document.getElementById('logoTopLeft');
+  const profileQuick = document.getElementById('profileQuickBtn');
+  if (key === 'occasion' || key === 'outfits' || key === 'edit') {
+    logoTop.style.display = 'flex'; profileQuick.style.display = 'block';
+    // Show the embedded PNG on page top-left if available (loginLogo src used)
+    const lg = document.getElementById('loginLogo');
+    if (lg && lg.src && lg.src.startsWith('data:image')) {
+      // swap small SVG wrapper with PNG thumbnail in top-left
+      logoTop.innerHTML = `<img src="${lg.src}" alt="logo" style="width:44px;height:44px;border-radius:8px;object-fit:cover;"/>`;
     }
+  } else {
+    logoTop.style.display = 'none'; profileQuick.style.display = 'none';
+  }
+}
 
-    document.getElementById("btn-login").onclick = () => show("gender");
-    document.querySelectorAll("#screen-gender button[data-gender]").forEach(btn=>{
-      btn.onclick = () => { user.gender = btn.dataset.gender; show("profile"); };
-    });
-    document.getElementById("scan").onclick = () => {
-      const tones = ["Warm", "Cool", "Neutral"];
-      const result = tones[Math.floor(Math.random() * tones.length)];
-      const scanMsg = document.getElementById("scan-result");
-      scanMsg.textContent = "Analyzing...";
-      setTimeout(() => {
-        user.skinTone = result;
-        scanMsg.textContent = "Detected: " + result;
-        document.getElementById("continue-profile").disabled = false;
-        document.getElementById("continue-profile").classList.remove("opacity-50","cursor-not-allowed");
-      }, 1500);
-    };
-    document.getElementById("continue-profile").onclick = () => show("occasion");
+/* startup */
+document.addEventListener('DOMContentLoaded', ()=> {
+  // load saved profile if any
+  const raw = localStorage.getItem('aptus_profile_v1');
+  if (raw) {
+    try { state.profile = JSON.parse(raw); document.getElementById('userName').textContent = state.profile.name || 'Guest'; } catch(e){}
+  }
+  showScreen('login');
+});
 
-    document.querySelectorAll("#screen-occasion button[data-occasion]").forEach(btn=>{
-      btn.onclick = async () => {
-        const occasion = btn.dataset.occasion;
-        show("outfit");
-        document.getElementById("outfit-title").textContent = `Your ${user.gender} Outfits for ${occasion}`;
-        const container = document.getElementById("outfit-container");
-        container.innerHTML = "🧠 Aptus AI is thinking...";
-        try {
-          const res = await fetch("https://aptus-ai-server.onrender.com/get-outfit",  {
-            method: "POST",
-            headers: {"Content-Type":"application/json"},
-            body: JSON.stringify({ gender: user.gender, skinTone: user.skinTone, occasion })
-          });
-          const data = await res.json();
-          container.innerHTML = "";
-          data.outfits.forEach(o=>{
-            const card = document.createElement("div");
-            card.className="glass p-3 rounded-xl space-y-2";
-            card.innerHTML = `<img src="${o.image}" class="rounded-md mx-auto w-40 h-40 object-cover">
-                              <p class="font-semibold">${o.name}</p>
-                              <a href="#" class="text-gold hover:underline">Shop Now</a>`;
-            container.appendChild(card);
-          });
-        } catch {
-          container.innerHTML = "Network error — please run backend server.";
-        }
-      };
-    });
+/* Login simulation */
+document.getElementById('btnSignIn').addEventListener('click', ()=> {
+  const btn = document.getElementById('btnSignIn');
+  btn.disabled = true; btn.textContent = 'Signing in...';
+  setTimeout(()=> {
+    btn.disabled = false; btn.textContent = 'Sign in with Google';
+    const name = prompt('Enter your name (demo)', state.profile.name || 'Guest');
+    state.profile.name = name && name.trim() ? name.trim() : 'Guest';
+    localStorage.setItem('aptus_profile_v1', JSON.stringify(state.profile));
+    document.getElementById('userName').textContent = state.profile.name;
+    showScreen('gender');
+  }, 900);
+});
 
-    document.getElementById("goto-feedback").onclick = ()=>show("feedback");
-    document.getElementById("submit-feedback").onclick = ()=>{
-      const text=document.getElementById("feedback-text").value.trim();
-      if(!text){alert("Please write something!");return;}
-      document.getElementById("feedback-msg").textContent="Thank you for your feedback!";
-    };
+/* Gender selection */
+document.querySelectorAll('[data-gender]').forEach(b => {
+  b.addEventListener('click', (e) => {
+    state.profile.gender = e.currentTarget.getAttribute('data-gender');
+    localStorage.setItem('aptus_profile_v1', JSON.stringify(state.profile));
+    showScreen('profile');
+  });
+});
+document.getElementById('backFromGender').addEventListener('click', ()=> showScreen('login'));
 
-    // Back buttons
-    document.getElementById("back-gender").onclick = ()=>show("login");
-    document.getElementById("back-profile").onclick = ()=>show("gender");
-    document.getElementById("back-occasion").onclick = ()=>show("profile");
-    document.getElementById("back-outfit").onclick = ()=>show("occasion");
-    document.getElementById("back-feedback").onclick = ()=>show("outfit");
-  </script>
+/* Profile creation scan */
+const heightInput = document.getElementById('heightInput');
+const weightInput = document.getElementById('weightInput');
+const scanStatus = document.getElementById('scanStatus');
+const btnScan = document.getElementById('btnScan');
+const btnContinue = document.getElementById('btnContinue');
+
+function checkContinue() {
+  const h = heightInput.value && heightInput.value.trim();
+  const w = weightInput.value && weightInput.value.trim();
+  const t = state.profile.skinTone;
+  if (h && w && t) {
+    btnContinue.disabled = false; btnContinue.classList.remove('opacity-60','cursor-not-allowed');
+  } else {
+    btnContinue.disabled = true; btnContinue.classList.add('opacity-60','cursor-not-allowed');
+  }
+}
+heightInput.addEventListener('input', checkContinue);
+weightInput.addEventListener('input', checkContinue);
+
+btnScan.addEventListener('click', ()=> {
+  btnScan.disabled = true; scanStatus.textContent = 'Analyzing...';
+  setTimeout(()=> {
+    const tones = ['Warm','Cool','Neutral'];
+    const pick = tones[Math.floor(Math.random()*tones.length)];
+    state.profile.skinTone = pick; scanStatus.textContent = 'Detected: ' + pick;
+    btnScan.disabled = false;
+    localStorage.setItem('aptus_profile_v1', JSON.stringify(state.profile));
+    checkContinue();
+  }, 1500);
+});
+
+btnContinue.addEventListener('click', ()=> {
+  state.profile.height = Number(heightInput.value) || null;
+  state.profile.weight = Number(weightInput.value) || null;
+  localStorage.setItem('aptus_profile_v1', JSON.stringify(state.profile));
+  showScreen('occasion');
+});
+document.getElementById('backFromProfile').addEventListener('click', ()=> showScreen('gender'));
+
+/* Occasion selection -> start outfit generation (simulated) */
+document.querySelectorAll('[data-oc]').forEach(btn => btn.addEventListener('click', (e)=>{
+  const oc = e.currentTarget.getAttribute('data-oc');
+  startOutfitFlow(oc);
+}));
+
+document.getElementById('profileIcon').addEventListener('click', ()=> {
+  document.getElementById('editHeight').value = state.profile.height || '';
+  document.getElementById('editWeight').value = state.profile.weight || '';
+  document.getElementById('currentToneDisplay').textContent = 'Detected Tone: ' + (state.profile.skinTone || '-');
+  showScreen('edit');
+});
+
+/* Outfits generation (simulated fake brain with curated Unsplash images) */
+const loadingArea = document.getElementById('loadingArea');
+const carouselWrap = document.getElementById('carouselWrap');
+const carousel = document.getElementById('carousel');
+
+function startOutfitFlow(occasion){
+  if(!state.profile.gender || !state.profile.skinTone){
+    alert('Please complete profile (gender and skin tone) first.');
+    return;
+  }
+  state.currentOccasion = occasion;
+  document.getElementById('outfitTitle').textContent = `${occasion} • ${state.profile.gender}`;
+  showScreen('outfits');
+  loadingArea.textContent = '🧠 Aptus AI is thinking...';
+  carouselWrap.style.display = 'none';
+
+  setTimeout(()=> {
+    generateFakeOutfits(occasion);
+    populateCarousel();
+    loadingArea.textContent = '';
+    carouselWrap.style.display = 'block';
+  }, 1100 + Math.random()*900);
+}
+
+function generateFakeOutfits(occasion){
+  // Curated Unsplash (royalty-free) images for a premium look
+  const unsplashSets = [
+    {
+      title: occasion + ' Look 1',
+      description: 'Maroon shirt with warm neutrals — classic and confident.',
+      items: [
+        { name: 'Maroon Shirt', image: 'https://images.unsplash.com/photo-1512436991641-6745cdb1723f?q=80&w=1400&auto=format&fit=crop&ixlib=rb-4.0.3&s=1b5ad9b6a6e9b6b3f0a4f6e4e3c1a5a0' },
+        { name: 'Beige Chinos', image: 'https://images.unsplash.com/photo-1541099649105-f69ad21f3246?q=80&w=1400&auto=format&fit=crop&ixlib=rb-4.0.3&s=7d8a4b0c3c3a6e4f0f7d9a7b2b6c9e1d' },
+        { name: 'Brown Loafers', image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=1400&auto=format&fit=crop&ixlib=rb-4.0.3&s=b1f8e4b1d5a6c7f8f1d6a7b2c3d4e5f6' }
+      ]
+    },
+    {
+      title: occasion + ' Look 2',
+      description: 'Navy blazer and crisp shirt — timeless and refined.',
+      items: [
+        { name: 'Navy Blazer', image: 'https://images.unsplash.com/photo-1520975913563-1f0b2f9c0f0a?q=80&w=1400&auto=format&fit=crop&ixlib=rb-4.0.3&s=2a1b3c4d5e6f7a8b9c0d1e2f3a4b5c6d' },
+        { name: 'White Shirt', image: 'https://images.unsplash.com/photo-1520962915530-9ad6e3c6f6b8?q=80&w=1400&auto=format&fit=crop&ixlib=rb-4.0.3&s=6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f' },
+        { name: 'Grey Pants', image: 'https://images.unsplash.com/photo-1514996937319-344454492b37?q=80&w=1400&auto=format&fit=crop&ixlib=rb-4.0.3&s=9f8e7d6c5b4a3b2c1d0e9f8a7b6c5d4e' }
+      ]
+    },
+    {
+      title: occasion + ' Look 3',
+      description: 'Elegant kurta set — traditional and festive.',
+      items: [
+        { name: 'Kurta', image: 'https://images.unsplash.com/photo-1545249390-6d57f8c3a0b6?q=80&w=1400&auto=format&fit=crop&ixlib=rb-4.0.3&s=1234567890abcdef1234567890abcdef' },
+        { name: 'Pajama', image: 'https://images.unsplash.com/photo-1503341455253-b2e723bb3dbb?q=80&w=1400&auto=format&fit=crop&ixlib=rb-4.0.3&s=abcdef1234567890abcdef1234567890' },
+        { name: 'Sandals', image: 'https://images.unsplash.com/photo-1526178615498-1a1b1c1d1e1f?q=80&w=1400&auto=format&fit=crop&ixlib=rb-4.0.3&s=a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6' }
+      ]
+    }
+  ];
+
+  // choose 3 looks (rotate depending on time for variety)
+  state.outfits = [
+    unsplashSets[0],
+    unsplashSets[1],
+    unsplashSets[2]
+  ];
+  state.outfitIndex = 0;
+}
+
+function populateCarousel(){
+  carousel.innerHTML = '';
+  state.outfits.forEach((outfit, i) => {
+    const card = document.createElement('div'); card.className = 'look';
+    card.innerHTML = `
+      <div style="font-family:'Playfair Display';font-weight:700;font-size:16px;">${outfit.title}</div>
+      <div class="muted" style="margin-top:6px;">${outfit.description}</div>
+      <div style="margin-top:10px; display:grid; grid-template-columns:repeat(3,1fr); gap:8px;">
+        ${outfit.items.map(it => `
+          <div style="text-align:center;">
+            <img src="${it.image}" alt="${it.name}" class="item-img" />
+            <div class="muted" style="margin-top:8px">${it.name}</div>
+            <a href="#" class="muted" onclick="event.preventDefault();">Shop Now</a>
+          </div>
+        `).join('')}
+      </div>
+    `;
+    carousel.appendChild(card);
+  });
+  showOutfitIndex(0);
+}
+
+function showOutfitIndex(idx){
+  if(!state.outfits || state.outfits.length === 0) return;
+  const total = state.outfits.length;
+  if(idx < 0) idx = total - 1;
+  if(idx >= total) idx = 0;
+  state.outfitIndex = idx;
+  const child = carousel.children[idx];
+  if(child) carousel.scrollTo({ left: child.offsetLeft - carousel.offsetLeft, behavior: 'smooth' });
+}
+
+document.getElementById('prevOutfit').addEventListener('click', ()=> showOutfitIndex(state.outfitIndex - 1));
+document.getElementById('nextOutfit').addEventListener('click', ()=> showOutfitIndex(state.outfitIndex + 1));
+document.getElementById('backFromOutfits').addEventListener('click', ()=> showScreen('occasion'));
+
+/* AI Tips simulation */
+document.getElementById('aiTipsBtn').addEventListener('click', ()=> {
+  showModal('AI Styling Tips', '<div style="padding:8px">Analyzing outfit and skin tone...</div>');
+  setTimeout(()=> {
+    const tip = generateTip();
+    updateModalContent(`<div style="padding:8px">${tip}</div>`);
+  }, 900);
+});
+function generateTip(){
+  const tone = state.profile.skinTone || 'Neutral';
+  let base = `This look works well for ${state.currentOccasion}. `;
+  if (tone === 'Warm') base += "Warm skin tones pair beautifully with gold and earthy accents.";
+  else if (tone === 'Cool') base += "Cool skin tones look great with navy and silver accents.";
+  else base += "Neutral tones are flexible — try soft pastels or beige for balance.";
+  return base;
+}
+
+/* modal helpers */
+function showModal(title, html){
+  const root = document.getElementById('modalRoot');
+  root.innerHTML = `<div class="modal-backdrop" id="modalBackdrop"><div class="modal"><div style="display:flex;justify-content:space-between;align-items:center;"><strong>${title}</strong><button id="closeModal" class="btn glass">✕</button></div><div id="modalContent" style="margin-top:12px">${html}</div></div></div>`;
+  root.style.display = 'block';
+  document.getElementById('closeModal').addEventListener('click', closeModal);
+  document.getElementById('modalBackdrop').addEventListener('click', (e)=> { if(e.target.id==='modalBackdrop') closeModal(); });
+}
+function updateModalContent(html){ const root=document.getElementById('modalRoot'); const c=root.querySelector('#modalContent'); if(c) c.innerHTML = html; }
+function closeModal(){ const root=document.getElementById('modalRoot'); root.style.display='none'; root.innerHTML=''; }
+
+/* Edit profile */
+document.getElementById('openEdit').addEventListener('click', ()=> {
+  document.getElementById('editHeight').value = state.profile.height || '';
+  document.getElementById('editWeight').value = state.profile.weight || '';
+  document.getElementById('currentToneDisplay').textContent = 'Detected Tone: ' + (state.profile.skinTone || '-');
+  showScreen('edit');
+});
+
+document.getElementById('genderMenEdit').addEventListener('click', ()=> { state.profile.gender = 'Men'; localStorage.setItem('aptus_profile_v1', JSON.stringify(state.profile)); alert('Gender set to Men'); });
+document.getElementById('genderWomenEdit').addEventListener('click', ()=> { state.profile.gender = 'Women'; localStorage.setItem('aptus_profile_v1', JSON.stringify(state.profile)); alert('Gender set to Women'); });
+document.getElementById('btnRescan').addEventListener('click', ()=> {
+  const btn = document.getElementById('btnRescan'); btn.disabled = true; document.getElementById('rescanInfo').textContent = 'Scanning...';
+  setTimeout(()=> { const tones = ['Warm','Cool','Neutral']; const pick = tones[Math.floor(Math.random()*tones.length)]; state.profile.skinTone = pick; document.getElementById('currentToneDisplay').textContent = 'Detected Tone: ' + pick; document.getElementById('rescanInfo').textContent = 'Last: Just now'; btn.disabled=false; localStorage.setItem('aptus_profile_v1', JSON.stringify(state.profile)); }, 1400);
+});
+document.getElementById('saveEditBtn').addEventListener('click', ()=> {
+  const eh = Number(document.getElementById('editHeight').value) || null;
+  const ew = Number(document.getElementById('editWeight').value) || null;
+  if (eh) state.profile.height = eh;
+  if (ew) state.profile.weight = ew;
+  localStorage.setItem('aptus_profile_v1', JSON.stringify(state.profile));
+  alert('Profile updated.');
+  showScreen('occasion');
+});
+document.getElementById('feedFromEdit').addEventListener('click', ()=> showScreen('feedback'));
+document.getElementById('backFromEdit').addEventListener('click', ()=> showScreen('occasion'));
+
+/* Feedback */
+document.getElementById('submitFeedbackBtn').addEventListener('click', ()=> {
+  const txt = document.getElementById('feedbackText').value.trim();
+  if(!txt){ alert('Please write your feedback.'); return; }
+  const arr = JSON.parse(localStorage.getItem('aptus_feedbacks_v1') || '[]');
+  arr.push({ text: txt, profile: state.profile, time: new Date().toISOString() });
+  localStorage.setItem('aptus_feedbacks_v1', JSON.stringify(arr));
+  document.getElementById('feedbackThanks').style.display = 'block';
+  setTimeout(()=> { document.getElementById('feedbackThanks').style.display = 'none'; document.getElementById('feedbackText').value=''; showScreen('edit'); }, 1200);
+});
+document.getElementById('backFromFeedback').addEventListener('click', ()=> showScreen('edit'));
+
+/* Keyboard nav */
+document.addEventListener('keydown', (e)=> {
+  if (SCREENS.outfits.classList.contains('active')) {
+    if (e.key === 'ArrowLeft') showOutfitIndex(state.outfitIndex - 1);
+    if (e.key === 'ArrowRight') showOutfitIndex(state.outfitIndex + 1);
+  }
+});
+
+/* initial UI */
+(function init(){
+  document.getElementById('userName').textContent = state.profile.name || 'Guest';
+  document.getElementById('logoTopLeft').style.display = 'none';
+  document.getElementById('profileQuickBtn').style.display = 'none';
+})();
+</script>
 </body>
 </html>
